@@ -75,38 +75,37 @@
                 <h4>Model </h4>
                 <div>
                     <figure><pre><code>
-                            ### MODEL ### 
-                            ## PLACEHOLDERS
-                            story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length] 
-                            order = tf.placeholder(tf.int64, [None, None], "order")              # [batch_size x 5]
+### MODEL ### 
+## PLACEHOLDERS
+story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length] 
+order = tf.placeholder(tf.int64, [None, None], "order")              # [batch_size x 5]
                             
-                            batch_size = tf.shape(story)[0]
+batch_size = tf.shape(story)[0]
                             
-                            sentences = [tf.reshape(x, [batch_size, -1]) for x in tf.split(axis=1, num_or_size_splits=5, value=story)]  # 5 times [batch_size x max_length]
+sentences = [tf.reshape(x, [batch_size, -1]) for x in tf.split(axis=1, num_or_size_splits=5, value=story)]  # 5 times [batch_size x max_length]
                             
-                            # Word embeddings
-                            initializer = tf.random_uniform_initializer(-0.1, 0.1)
-                            embeddings = tf.get_variable("W", [vocab_size, input_size], initializer=initializer)
+# Word embeddings
+nitializer = tf.random_uniform_initializer(-0.1, 0.1)
+embeddings = tf.get_variable("W", [vocab_size, input_size], initializer=initializer)
                             
-                            sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence)   # [batch_size x max_seq_length x input_size]
-                                                  for sentence in sentences]
+sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence)  for sentence in sentences]  # [batch_size x max_seq_length x input_size]
+                        
+hs = [tf.reduce_sum(sentence, 1) for sentence in sentences_embedded] # 5 times [batch_size x input_size]
                             
-                            hs = [tf.reduce_sum(sentence, 1) for sentence in sentences_embedded] # 5 times [batch_size x input_size]
+h = tf.concat(axis=1, values=hs)    # [batch_size x 5*input_size]
+h = tf.reshape(h, [batch_size, 5*input_size])
                             
-                            h = tf.concat(axis=1, values=hs)    # [batch_size x 5*input_size]
-                            h = tf.reshape(h, [batch_size, 5*input_size])
+logits_flat = tf.contrib.layers.linear(h, 5 * target_size)    # [batch_size x 5*target_size]
+logits = tf.reshape(logits_flat, [-1, 5, target_size])        # [batch_size x 5 x target_size]
                             
-                            logits_flat = tf.contrib.layers.linear(h, 5 * target_size)    # [batch_size x 5*target_size]
-                            logits = tf.reshape(logits_flat, [-1, 5, target_size])        # [batch_size x 5 x target_size]
+# loss 
+loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
                             
-                            # loss 
-                            loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
-                            
-                            # prediction function
-                            unpacked_logits = [tensor for tensor in tf.unstack(logits, axis=1)]
-                            softmaxes = [tf.nn.softmax(tensor) for tensor in unpacked_logits]
-                            softmaxed_logits = tf.stack(softmaxes, axis=1)
-                            predict = tf.arg_max(softmaxed_logits, 2)
+# prediction function
+unpacked_logits = [tensor for tensor in tf.unstack(logits, axis=1)]
+softmaxes = [tf.nn.softmax(tensor) for tensor in unpacked_logits]
+softmaxed_logits = tf.stack(softmaxes, axis=1)
+predict = tf.arg_max(softmaxed_logits, 2)
                     </code></pre></figure>
                 </div>
             </p>
