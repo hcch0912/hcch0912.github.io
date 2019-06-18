@@ -74,11 +74,10 @@
             <p>
                 <h4>Model </h4>
                 <div>
-                    <code>
-                            ### MODEL ###
-
+                    <figure><pre><code>
+                            ### MODEL ### 
                             ## PLACEHOLDERS
-                            story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length]
+                            story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length] 
                             order = tf.placeholder(tf.int64, [None, None], "order")              # [batch_size x 5]
                             
                             batch_size = tf.shape(story)[0]
@@ -108,23 +107,13 @@
                             softmaxes = [tf.nn.softmax(tensor) for tensor in unpacked_logits]
                             softmaxed_logits = tf.stack(softmaxes, axis=1)
                             predict = tf.arg_max(softmaxed_logits, 2)
-                    </code>
+                    </code></pre></figure>
                 </div>
             </p>
 
             <h3 id="jekyll-themes"> Results</h3>
 
         </section>
-
-
-
-
-        <h3 id="support-or-contact"> Contact</h3>
-
-        <a href="veronicachen0912@gmail.com" class="fa fa-google"></a>
-        <a href="https://www.facebook.com/profile.php?id=100011539032763" class="fa fa-facebook"></a>
-        <a href="https://twitter.com/_Veronica_Chen" class="fa fa-twitter"></a>
-        <a href="https://www.linkedin.com/in/hui-chen-vrnc0912/" class="fa fa-linkedin"></a>
 
 
 
