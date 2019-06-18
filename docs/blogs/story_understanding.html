@@ -75,6 +75,32 @@
                 <h4>Model </h4>
                 <div>
                     <figure><pre><code>
+class BasicRNN():
+def __init__(self,num_hidden, num_features, timesteps ):
+    self.num_hidden = num_hidden 
+    self.num_features = num_features
+    self.timesteps = timesteps
+                        
+    self.weights = {
+        'out': tf.Variable(tf.random_normal([self.num_hidden, self.num_features]))
+    }
+    self.biases = {
+        'out': tf.Variable(tf.random_normal([self.num_features]))
+    }
+                        
+def lstm_cell(self):
+    return rnn.BasicLSTMCell(self.num_hidden, forget_bias=1.0)
+                        
+def buildRNN(self, x):
+    # Forward direction cell
+    rnn_cell = rnn.MultiRNNCell([self.lstm_cell() for _ in range(2)])
+    #x = tf.unstack(x, self.timesteps, 1) 
+    # x = timesteps x batch_size x input_size
+    outputs, states = rnn.static_rnn(rnn_cell, x, dtype=tf.float32)
+                        
+    return tf.matmul(outputs[-1], self.weights['out']) + self.biases['out']
+                        
+                        
 ### MODEL ### 
 ## PLACEHOLDERS
 story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length] 
@@ -89,15 +115,33 @@ nitializer = tf.random_uniform_initializer(-0.1, 0.1)
 embeddings = tf.get_variable("W", [vocab_size, input_size], initializer=initializer)
                             
 sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence)  for sentence in sentences]  # [batch_size x max_seq_length x input_size]
-                        
-hs = [tf.reduce_sum(sentence, 1) for sentence in sentences_embedded] # 5 times [batch_size x input_size]
-                            
-h = tf.concat(axis=1, values=hs)    # [batch_size x 5*input_size]
-h = tf.reshape(h, [batch_size, 5*input_size])
-                            
-logits_flat = tf.contrib.layers.linear(h, 5 * target_size)    # [batch_size x 5*target_size]
+
+basicRNN = BasicRNN(num_hidden, num_features, timesteps )
+
+
+# # timestep x [batch_size*5, input_size]
+# x =  tf.unstack(to_single_sentence, timesteps, 1)
+
+# lstmOutput  [batch_size*5, output_size]
+lstmOutput = basicRNN.buildRNN( x )
+
+a = tf.reshape(lstmOutput, [5,-1,64])
+sentence_to_vec = tf.unstack(a, 5, 0)
+
+# 5 x [batch x output_size]
+sent_lstmOutput = basicRNN.buildBidirectionalRNN( sentence_to_vec )
+
+hs_reshape = tf.concat(sent_lstmOutput, axis = 1)
+
+logits_flat = tf.contrib.layers.linear(hs_reshape, 5 * target_size)    # [batch_size x 5*target_size]
+logits_flat_dropout = tf.contrib.layers.dropout(hs_reshape, dropout)
 logits = tf.reshape(logits_flat, [-1, 5, target_size])        # [batch_size x 5 x target_size]
-                            
+
+# loss + regularization
+regularizer = tf.nn.l2_loss(embeddings)
+loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
+loss = tf.reduce_mean(loss + beta * regularizer)
+                  
 # loss 
 loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
                             
