@@ -522,12 +522,12 @@ footer {
 }
 
 code {
-    background: hsl(220, 80%, 90%);
+    background: hsl(70, 12%, 93%, );
 }
 
 pre {
     white-space: pre-wrap;
-    background: hsl(30, 80%, 90%);
+    background: hsl(205, 8%, 73%, );
 }
 
 @media print,
