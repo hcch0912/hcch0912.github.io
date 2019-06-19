@@ -75,86 +75,209 @@
                 <h4>Model </h4>
                 <div>
                     <figure><pre><code>
+from tensorflow.contrib import rnn
+learning_rate = 0.01
+num_hidden = 128
+num_features = 64
+timesteps = max_sent_len
+lstm_output_size = 64
+
 class BasicRNN():
-def __init__(self,num_hidden, num_features, timesteps ):
-    self.num_hidden = num_hidden 
-    self.num_features = num_features
-    self.timesteps = timesteps
-                        
-    self.weights = {
-        'out': tf.Variable(tf.random_normal([self.num_hidden, self.num_features]))
-    }
-    self.biases = {
-        'out': tf.Variable(tf.random_normal([self.num_features]))
-    }
-                        
-def lstm_cell(self):
-    return rnn.BasicLSTMCell(self.num_hidden, forget_bias=1.0)
-                        
-def buildRNN(self, x):
-    # Forward direction cell
-    rnn_cell = rnn.MultiRNNCell([self.lstm_cell() for _ in range(2)])
-    #x = tf.unstack(x, self.timesteps, 1) 
-    # x = timesteps x batch_size x input_size
-    outputs, states = rnn.static_rnn(rnn_cell, x, dtype=tf.float32)
-                        
-    return tf.matmul(outputs[-1], self.weights['out']) + self.biases['out']
-                        
-                        
-### MODEL ### 
+    def __init__(self,num_hidden, num_features, timesteps ):
+        self.num_hidden = num_hidden 
+        self.num_features = num_features
+        self.timesteps = timesteps
+
+
+        self.weights = {
+            'out': tf.Variable(tf.random_normal([self.num_hidden, self.num_features]))
+        }
+        self.biases = {
+            'out': tf.Variable(tf.random_normal([self.num_features]))
+        }
+
+    def lstm_cell(self):
+          return rnn.BasicLSTMCell(self.num_hidden, forget_bias=1.0)
+
+    def buildRNN(self, x):
+        # Forward direction cell
+
+        rnn_cell = rnn.MultiRNNCell([self.lstm_cell() for _ in range(4)])
+        #x = tf.unstack(x, self.timesteps, 1) 
+        # x = timesteps x batch_size x input_size
+        outputs, states = rnn.static_rnn(rnn_cell, x, dtype=tf.float32)
+
+        return tf.matmul(outputs[-1], self.weights['out']) + self.biases['out']
+
+    def buildBidirectionalRNN (self, x):
+        # Forward direction cell
+        lstm_fw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0)
+        # Backward direction cell
+        lstm_bw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0)
+        # Get lstm cell output
+        try:
+            outputs, _, _ = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x,
+                      dtype=tf.float32)
+        except Exception: # Old TensorFlow version only returns outputs not states
+            outputs = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x,
+                dtype=tf.float32)
+        outs = []
+        for output in outputs:
+             outs.append( tf.matmul(output, self.bi_weights['out']) + self.biases['out'])
+        return outs
+        
+    def buildDynaimcRNN(self, x, batch_size):
+        
+        lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
+        outputs, states = tf.contrib.rnn.static_rnn(lstm_cell, x, dtype=tf.float32,
+    sequence_length=self.seqlen)
+#         outputs = tf.stack(outputs)
+#         outputs = tf.transpose(outputs, [1, 0, 2])
+#         # Hack to build the indexing and retrieve the right output.
+#         batch_size = tf.shape(outputs)[0]
+#         # Start indices for each sample
+#         index = tf.range(0, batch_size) * self.timesteps + (self.seqlen - 1)
+#         # Indexing
+#         outputs = tf.gather(tf.reshape(outputs, [-1, self.num_hidden]), index)
+        outputs = tf.reshape(tf.stack(outputs), [-1, lstm_cell.output_size])
+#         num_partitions = 2
+#         res_out = tf.dynamic_partition(outputs, self.partitions, num_partitions)
+        # Linear activation, using outputs computed above
+        return tf.matmul(outputs, self.weights['out']) + self.biases['out']
+                
+        beta = 0.1
+
+                    </code></pre></figure>
+
+                    <h4>MODEL Training</h4>
+                    <figure>
+                        <pre>
+                            <code>
+tf.reset_default_graph()
+tf.initialize_all_variables()
+
+
 ## PLACEHOLDERS
-story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length] 
+story = tf.placeholder(tf.int64, [None, None, None], "story")        # [batch_size x 5 x max_length]
 order = tf.placeholder(tf.int64, [None, None], "order")              # [batch_size x 5]
-                            
+
 batch_size = tf.shape(story)[0]
-                            
+
 sentences = [tf.reshape(x, [batch_size, -1]) for x in tf.split(axis=1, num_or_size_splits=5, value=story)]  # 5 times [batch_size x max_length]
-                            
+
 # Word embeddings
-nitializer = tf.random_uniform_initializer(-0.1, 0.1)
+initializer = tf.constant_initializer(word_vector_matrix)
 embeddings = tf.get_variable("W", [vocab_size, input_size], initializer=initializer)
-                            
-sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence)  for sentence in sentences]  # [batch_size x max_seq_length x input_size]
+
+sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence)   # 5 * [batch_size x max_seq_length x input_size]
+                      for sentence in sentences]
 
 basicRNN = BasicRNN(num_hidden, num_features, timesteps )
 
+# x [batch_size*5, input_size]
 
-# # timestep x [batch_size*5, input_size]
-# x =  tf.unstack(to_single_sentence, timesteps, 1)
+to_single_sentence = tf.concat(sentences_embedded , axis = 0)
+
+x =  tf.unstack(to_single_sentence, timesteps, 1)
+
 
 # lstmOutput  [batch_size*5, output_size]
 lstmOutput = basicRNN.buildRNN( x )
 
-a = tf.reshape(lstmOutput, [5,-1,64])
-sentence_to_vec = tf.unstack(a, 5, 0)
+# separate lstmOutput 5x[batch_size, output_size]
+hs = tf.reshape(lstmOutput,[5, -1, lstm_output_size] )
+hs_transpose = tf.transpose(hs, [1,0,2])
 
-# 5 x [batch x output_size]
-sent_lstmOutput = basicRNN.buildBidirectionalRNN( sentence_to_vec )
-
-hs_reshape = tf.concat(sent_lstmOutput, axis = 1)
+hs_reshape = tf.reshape(hs_transpose, [-1, 5*lstm_output_size]) #[batch_size, 5*output]
 
 logits_flat = tf.contrib.layers.linear(hs_reshape, 5 * target_size)    # [batch_size x 5*target_size]
-logits_flat_dropout = tf.contrib.layers.dropout(hs_reshape, dropout)
 logits = tf.reshape(logits_flat, [-1, 5, target_size])        # [batch_size x 5 x target_size]
 
 # loss + regularization
 regularizer = tf.nn.l2_loss(embeddings)
 loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
 loss = tf.reduce_mean(loss + beta * regularizer)
-                  
-# loss 
-loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
-                            
+
 # prediction function
 unpacked_logits = [tensor for tensor in tf.unstack(logits, axis=1)]
 softmaxes = [tf.nn.softmax(tensor) for tensor in unpacked_logits]
 softmaxed_logits = tf.stack(softmaxes, axis=1)
 predict = tf.arg_max(softmaxed_logits, 2)
-                    </code></pre></figure>
+
+                            </code>
+                        </pre>
+                    </figure>
                 </div>
             </p>
 
-            <h3 id="jekyll-themes"> Results</h3>
+            <h3 id="jekyll-themes"> My Results</h3>
+
+            <table>
+                <tr>
+                    <th> Model </th>
+                    <th> Hyper-parameters ></th>
+
+                    <th> Highest Score </th>
+                </tr>
+                <tr>
+                    <td> Static RNN + LSTM(4) </td>
+                    <td> batch size: 256; learning rate: 0.1; </td>
+                    <td> 56.0 </td>
+                </tr>
+                <tr>
+                    <td> Bi-directional RNN + LSTM(2) </td>
+                    <td> batch size: 256; learning rate: 0.01; </td>
+                    <td> 54. </td>
+                </tr>
+                <tr>
+                    <td> Dynamic RNN + LSTM(2) </td>
+                    <td> batch size: 256; learning rate: 0.01; </td>
+                    <td> 54.6 </td>
+                </tr>
+                <tr>
+                    <td> Sent2Vec RNN </td>
+                    <td> batch size: 256; learning rate: 0.01; </td>
+                    <td> 53.5 </td>
+                </tr>
+            </table>
+
+            <h4> Benchmarks</h4>
+            <table>
+                <tr>
+                    <th> Model </th>
+
+                    <th> Highest Score </th>
+                </tr>
+                <tr>
+                    <td> DSSM</td>
+                    <td> 58.5 </td>
+                </tr>
+                <tr>
+                    <td> GenSim</td>
+                    <td> 53.9 </td>
+                </tr>
+                <tr>
+                    <td> Skip-thoughts</td>
+                    <td> 55.2 </td>
+                </tr>
+                <tr>
+                    <td> SentimentLast</td>
+                    <td> 55.2 </td>
+                </tr>
+
+                <tr>
+                    <td> Frequency </td>
+                    <td> 52.0 </td>
+                </tr>
+                <tr>
+                    <td> N-gram-overlap</td>
+                    <td> 49.4 </td>
+                </tr>
+                <tr>
+                    <td> Narritive-chains-stories </td>
+                    <td> 49.4 </td>
+                </tr>
+            </table>
 
         </section>
 
