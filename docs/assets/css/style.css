@@ -379,7 +379,7 @@ a:hover small {
 }
 
 .wrapper {
-    width: 860px;
+    width: 1080px;
     margin: 0 auto;
 }
 
@@ -521,17 +521,8 @@ footer {
     -webkit-font-smoothing: subpixel-antialiased;
 }
 
-code {
-    background: hsl(70, 12%, 93%, );
-}
-
-pre {
-    white-space: pre-wrap;
-    background: hsl(205, 8%, 73%, );
-}
-
 @media print,
-screen and (max-width: 1100px) {
+screen and (max-width: 960px) {
     div.wrapper {
         width: auto;
         margin: 0;
@@ -544,7 +535,7 @@ screen and (max-width: 1100px) {
         width: auto;
     }
     header {
-        padding-right: 280px;
+        padding-right: 320px;
     }
     section {
         border: 1px solid #e5e5e5;
