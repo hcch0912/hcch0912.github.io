@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>HUI CHEN's Site</title>
+
+    <link rel="stylesheet" href="../assets/css/style.css?v=1dfea8a2590028e2ee334e5787d2511685a6ec9e">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/icons.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="wrapper">
+
+
+        <header>
+            <h3 id="jekyll-themes"> Multi-agent Reinforcement Learning Literature Reviews </h3>
+            While deep reinforcement learning has been proved successful in many domains, solutions like deep Q-learning and Policy Gradient methods [Mnih et al., 2013, Lillicrap et al., 2015, Silver et al., 2014] can achieve impressive results in some challenging
+            single agent environment such as Atari games. However, the multi-agent environment makes the learning problem more challenging ,because agents policies are changing during the training and the environment is not stationary for a single agent
+            algorithm to learn a good strategy.
+            <br> I am interested in this field of research so I would like to share a review of the literatures. I have categorized the literatures into three groups: opponent modeling methods, centralized critic methods and communication methods.
+
+            <br>
+            <p><a href="../blogs.html">Back to Blog List</a> </p>
+        </header>
+        <section>
+            <h3 id="jekyll-themes"> Opponent Modeling Methods </h3>
+
+            <div>
+                <a href="https://arxiv.org/abs/1709.04326">  Learning with Opponent-Learning Awareness</a>
+                <br> LOLA's value estimination is not only based on the agent's current policy, but also the other's policy after one anticipated update. LOLA agents do not predict the opponent's policy update and learn a best respone, but attempt to
+                influence the other's policy update. They are shaping the update direction of each other. In experiments, the LOLA agents are able to reach a Nash-equilibrium tic-tac-toc.
+                <br> The code is in <a href="github.com/alshedivat/lola">github repo</a>
+            </div>
+            <br>
+            <div>
+                <a href="https://arxiv.org/pdf/1802.09640.pdf">Modeling other agents by oneself </a>
+                <br> in this method (SOM), each agent holds a belief of other agents, and they will use its own policy to predict the other's action and to update the belief.
+                <figure>
+                    <img src="images/som.png" width=300> </img>
+                    <figcaption>
+                        Architecture of SOM <a href="ttps://arxiv.org/pdf/1802.09640.pdf"> (image source) </a>
+                    </figcaption>
+                </figure>
+            </div>
+            <br>
+            <h3 id="jekyll-themes">Centralized Critic Methods</h3>
+
+            <div>
+                <a href="https://arxiv.org/abs/1706.02275">Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments </a> MADDPG has been qualified as the state-of-art multi-agent reinforcement learning architecture since it was published.
+                <br> The main idea in this work is to use a centralized critic to give the <i>action-value </i>estimination with the actions of all agents, where the value estimination contrains the information of the global state. This solve the problem
+                of partial observability and non-stationarity that brought by the changing policies of other agents in the environment.
+
+                <br>The experiment environment is <a href="https://github.com/openai/multiagent-particle-envs"> OpenAI's multiagent-particle-envs </a>, and code is in <a href="https://github.com/openai/maddpg">github </a>
+                <figure>
+                    <img src="images/maddpg.png" width=300> </img>
+                    <figcaption>
+                        Architecture of MADDPG <a href="https://arxiv.org/abs/1706.02275"> (image source) </a>
+                    </figcaption>
+                </figure>
+            </div>
+            <br>
+            <div>
+                <a href="https://arxiv.org/abs/1705.08926"> Counterfactual Multi-agent reinforcement learning </a> Similar to MADDPG, COMA uses a centralized critic to estiminate the A-function. What's different is that COMA added a <i>counterfactual baseline</i>                to margin out a single agent's action. So that the credit that the agent recieves can be considered as independent of other agents.
+                <br>They used StarCrat unit micromanagement as the experiment environment.
+                <figure>
+                    <img src="images/coma.png" width=300> </img>
+                    <figcaption>
+                        Architecture of COMA <a href="https://arxiv.org/abs/1705.08926"> (image source) </a>
+                    </figcaption>
+                </figure>
+                <br>
+            </div>
+
+
+            <h3 id="jekyll-themes">Communication Methods</h3>
+            <div>
+                <a href="https://arxiv.org/pdf/1605.06676.pdf"> Learning to communicate with deep multi-agent reinforcement learning</a> This work introduces an architecture where agents can communicate via a limited bandit channel. There are two method
+                of communication, one is to decompose the action into environment action and communication action, to learn them separatedly with two neural networks; the other one is to share the gradients among agents via the communication channel.
+            </div>
+        </section>
+
+        <footer>
+
+            <p>This project is maintained by <a href="http://github.com/hcch0912">hcch0912</a></p>
+
+            <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        </footer>
+    </div>
+    <script src="../assets/js/scale.fix.js"></script>
+
+
+    </div>
+</body>
+
+</html>
