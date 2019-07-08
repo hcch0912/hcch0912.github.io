@@ -27,11 +27,18 @@
             <br> I am interested in this field of research so I would like to share a review of the literatures. I have categorized the literatures into three groups: opponent modeling methods, centralized critic methods and communication methods.
 
             <br>
+            <br>
             <p><a href="../blogs.html">Back to Blog List</a> </p>
         </header>
         <section>
             <h3 id="jekyll-themes"> Opponent Modeling Methods </h3>
+            <blockquote>
 
+                Due to the changing policies of other agents, the environment is not stationary. To handle this problem, we can build a model of others' policies, to predict the possile next actions of others, and take these actions into account when making decisions.
+                In this way, the non-stationarity can be mitigated. And with deep learning, we can model others' policies with neural networks, which are learnable. In this section, I will introduce some of the work using opponent modelling method to
+                solve multi-agent problems.
+
+            </blockquote>
             <div>
                 <a href="https://arxiv.org/abs/1709.04326">  Learning with Opponent-Learning Awareness</a>
                 <br> LOLA's value estimination is not only based on the agent's current policy, but also the other's policy after one anticipated update. LOLA agents do not predict the opponent's policy update and learn a best respone, but attempt to
@@ -41,7 +48,8 @@
             <br>
             <div>
                 <a href="https://arxiv.org/pdf/1802.09640.pdf">Modeling other agents by oneself </a>
-                <br> in this method (SOM), each agent holds a belief of other agents, and they will use its own policy to predict the other's action and to update the belief.
+                <br> in this method (SOM), each agent holds a belief of other agents, and they will use its own policy to predict the other's action and to update the belief. The main intention of this work is to make the agents learn other's goal so
+                that they can they can understand each other in order to cooperate. They use recurrent neural network with state and a goal as input. The agent needs to infer others' goal and maximize the likelihood of other's actions.
                 <figure>
                     <img src="images/som.png" width=300> </img>
                     <figcaption>
@@ -50,8 +58,13 @@
                 </figure>
             </div>
             <br>
+            <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="100%" color=#987cb9 SIZE=3>
             <h3 id="jekyll-themes">Centralized Critic Methods</h3>
-
+            <blockquote>
+                Besides building a model other others, another method is to use a centralized critic, which gives the value estimation based on the information from all the agents, so that the non-stationarity could be mitigated. I am not saying elimated because the
+                critic only gives estimated value, so that it could not model the dynamics perfectly. The advantage of this method is that, we can apply the centralized critic directly in the actor-critic architecture without extra neural networks compared
+                to opponent-modelling method, so it's easier to train.
+            </blockquote>
             <div>
                 <a href="https://arxiv.org/abs/1706.02275">Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments </a> MADDPG has been qualified as the state-of-art multi-agent reinforcement learning architecture since it was published.
                 <br> The main idea in this work is to use a centralized critic to give the <i>action-value </i>estimination with the actions of all agents, where the value estimination contrains the information of the global state. This solve the problem
@@ -77,12 +90,19 @@
                 </figure>
                 <br>
             </div>
-
+            <br>
+            <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="100%" color=#987cb9 SIZE=3>
 
             <h3 id="jekyll-themes">Communication Methods</h3>
+            <blockquote>
+                In nature, if two creatures want to cooperate, they will share some information to coordinate. So in this set of method, instead of doing modeling or estimination of other's actions or intents, the agent send messages directly to each other. The advantage
+                of this method is that without estimation, all the actions and intents are correct. But the disadvantage of this method is that in many cases, it's difficult or impossible to construct a message channel. And the cost of sending messages
+                could be expensive.
+            </blockquote>
             <div>
-                <a href="https://arxiv.org/pdf/1605.06676.pdf"> Learning to communicate with deep multi-agent reinforcement learning</a> This work introduces an architecture where agents can communicate via a limited bandit channel. There are two method
-                of communication, one is to decompose the action into environment action and communication action, to learn them separatedly with two neural networks; the other one is to share the gradients among agents via the communication channel.
+                <a href="https://arxiv.org/pdf/1605.06676.pdf"> Learning to communicate with deep multi-agent reinforcement learning</a>
+                <br> This work introduces an architecture where agents can communicate via a limited bandit channel. There are two method of communication, one is to decompose the action into environment action and communication action, to learn them
+                separatedly with two neural networks; the other one is to share the gradients among agents via the communication channel.
             </div>
         </section>
 

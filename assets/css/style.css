@@ -521,6 +521,14 @@ footer {
     -webkit-font-smoothing: subpixel-antialiased;
 }
 
+blockquote {
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 10px;
+    margin-right: 40px;
+}
+
 @media print,
 screen and (max-width: 960px) {
     div.wrapper {
