@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2019-07-18T22:04:29+00:00</updated><id>http://0.0.0.0:4000/</id><title type="html">Hui Chen’s Site</title><subtitle>Hui Chen's Site
+</subtitle><author><name>Hui Chen</name></author><entry><title type="html">Safe Reinforcement Learning Literature Reviews</title><link href="http://0.0.0.0:4000/2019/07/01/safe_rl.html" rel="alternate" type="text/html" title="Safe Reinforcement Learning Literature Reviews" /><published>2019-07-01T00:00:00+00:00</published><updated>2019-07-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/2019/07/01/safe_rl</id><content type="html" xml:base="http://0.0.0.0:4000/2019/07/01/safe_rl.html">&lt;p&gt;While the accumulative reward is the major optimisation object in reinforcement learning, in some cases, the safety of the agent is also important, like expensive robotics or drones. Safe reinforcement learning is to reduce the risk of
+            the algorithm and ensure the safety of the agent. In this article, I will introduce the risks in reinforcment learning and the correpsonding approaches. The reference paper is &lt;i&gt;A Comprehensive Survey of Safe Reinforcement Learning &lt;/i&gt;
+            &lt;a href=&quot;http://www.jmlr.org/papers/volume16/garcia15a/garcia15a.pdf&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;risks-in-reinforcment-learning&quot;&gt;Risks in Reinforcment Learning&lt;/h2&gt;
+
+&lt;p&gt;There are several types of risks existing in reinforcement learning, which come from the stochasticity of the environment. And here I list some of the risks:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Variance of the return: even with an optimal policy, the return could be bad in some cases&lt;/li&gt;
+  &lt;li&gt;Initial exploration in unknown env could lead to dangerous or dead env&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Human defined risks, ep: robots going off the road
+              From the list we can see that in typical reinforcement learning environment, we usually do not take these conditions into consideration, which makes the agent suffer from risk.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://media.giphy.com/media/N8wR1WZobKXaE/giphy.gif&amp;quot;&quot; alt=&quot;Robots in Risk&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;approaches-to-handle-the-risk-in-reinforcemnet-learning&quot;&gt;Approaches to Handle the Risk in Reinforcemnet Learning&lt;/h2&gt;
+
+&lt;p&gt;To handle the risks that listed above, we can add some criterion in the learning so that the agent is able to mitigate the risks. we There are two kinds of criterion, one is Optimisation Criterion, the other is Exploration Process.&lt;/p&gt;
+
+&lt;h3 id=&quot;optimisation-criterion&quot;&gt;Optimisation Criterion&lt;/h3&gt;
+&lt;p&gt;In this category, there are several different criterions. During the training, we need to encode the criterions in the learning system, either in environment or in agent. This will help the reinforcement learning agent learn a safe policy, and a safe
+                policy tends to avoid risky actions.&lt;/p&gt;
+
+&lt;h4 id=&quot;1-worst-case-criterion&quot;&gt;1. Worst case criterion:&lt;/h4&gt;
+&lt;p&gt;We need to find the optimal policy is the one that maximise return in the worst cases. Because even a policy gives good actions in most of the cases, it could kill itself by doing some dangerous action in a worst case. So besides
+                a general good policy, we need a safe policy which perform well in extreme conditions.&lt;/p&gt;
+&lt;h4 id=&quot;2-risk-sensitive-criterion&quot;&gt;2. Risk sensitive criterion&lt;/h4&gt;
+&lt;p&gt;A combination of return and risk, where risk can be defined as the variance of the return. Use this conbinated reward will give the policy a sense of dangerous. This method is easy and straightforward, we just need to make a sensible
+                reward function. And there are some examples:
+&lt;script type=&quot;math/tex&quot;&gt;max_{\pi in \Pi} E_{\pi}(R) + \frac{\beta}{2} Var(R) + \BigO(\beta^2)&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The optimization objective could be an exponential function of reward and risk :&lt;/p&gt;
+
+&lt;h4 id=&quot;3-constrained-criterion&quot;&gt;3. Constrained criterion&amp;lt;&lt;/h4&gt;
+&lt;p&gt;Maximize return while keeping other types of expected measures higher than some given bounds. For example, keep the return exceed some specific mimimum threshold. This is suitable for the case that we don’t know what is a good policy
+                and we want to do exploration. And another example is to set a threshold of the variance of return. Apart from the reward, we can also set constraints to the policy gradient, like &lt;b&gt;TRPO/ PPO&lt;/b&gt;, we cannot update the policy to a directly
+                too agressively.&lt;/p&gt;
+
+&lt;h3 id=&quot;exploration-process&quot;&gt;Exploration Process&lt;/h3&gt;
+&lt;p&gt;Beside setting criterion, we can also approach the problem from the aspective of exploration.&lt;/p&gt;
+
+&lt;h4 id=&quot;1-provide-external-knowledge&quot;&gt;1. Provide external knowledge&lt;/h4&gt;
+&lt;p&gt;The criterions could give a the agent a learning signal of what are safe and what are not, where the agents still need to do explorations and learn how to behave. While the other type of method is to teach the agent directly what
+                to do and what not to do, which can be more efficient and effective. But this method requires more human effort compare to setting the criterions only.
+                &lt;br /&gt; In this method, we need someone to provide the initial knowledge, the one could be a human teacher, or an agent with previoud knowledge which is trasferable. The teacher will give exact instructions of what to do and the agent will
+                not explore the unknow part of the environment. This method is suitable for the robotic taks, where robos are expensive and fragile and in the meanwhile, there’s no much requirement for innovative actions.&lt;/p&gt;
+
+&lt;h4 id=&quot;2--risk-directed-exploration&quot;&gt;2.  Risk directed exploration&lt;/h4&gt;
+&lt;p&gt;Agents are encouraged to seek controllable regions of the environment, and will be punished for exploration directions towards the dangerous places.&lt;/p&gt;
+
+&lt;h3 id=&quot;end-words&quot;&gt;End Words&lt;/h3&gt;
+&lt;p&gt;Safe reinforcement learning is an really interesting field of research, and it’s meaningful for the real-world problems. From robotics to operations, we do not only need a well-performed agent that could out-perform human, but also the agent that is able
+                to handle extreme and dangerous cases so that we do not suffer from lose. Anyone with an interest of doing research or practical projects on Safe Reinforcement Learning is welcome to contact me and have discussions.
+—&lt;/p&gt;</content><author><name>Hui Chen</name></author><category term="RL" /><summary type="html">While the accumulative reward is the major optimisation object in reinforcement learning, in some cases, the safety of the agent is also important, like expensive robotics or drones. Safe reinforcement learning is to reduce the risk of the algorithm and ensure the safety of the agent. In this article, I will introduce the risks in reinforcment learning and the correpsonding approaches. The reference paper is A Comprehensive Survey of Safe Reinforcement Learning link Risks in Reinforcment Learning There are several types of risks existing in reinforcement learning, which come from the stochasticity of the environment. And here I list some of the risks: Variance of the return: even with an optimal policy, the return could be bad in some cases Initial exploration in unknown env could lead to dangerous or dead env Human defined risks, ep: robots going off the road From the list we can see that in typical reinforcement learning environment, we usually do not take these conditions into consideration, which makes the agent suffer from risk. Approaches to Handle the Risk in Reinforcemnet Learning To handle the risks that listed above, we can add some criterion in the learning so that the agent is able to mitigate the risks. we There are two kinds of criterion, one is Optimisation Criterion, the other is Exploration Process. Optimisation Criterion In this category, there are several different criterions. During the training, we need to encode the criterions in the learning system, either in environment or in agent. This will help the reinforcement learning agent learn a safe policy, and a safe policy tends to avoid risky actions. 1. Worst case criterion: We need to find the optimal policy is the one that maximise return in the worst cases. Because even a policy gives good actions in most of the cases, it could kill itself by doing some dangerous action in a worst case. So besides a general good policy, we need a safe policy which perform well in extreme conditions. 2. Risk sensitive criterion A combination of return and risk, where risk can be defined as the variance of the return. Use this conbinated reward will give the policy a sense of dangerous. This method is easy and straightforward, we just need to make a sensible reward function. And there are some examples: The optimization objective could be an exponential function of reward and risk : 3. Constrained criterion&amp;lt; Maximize return while keeping other types of expected measures higher than some given bounds. For example, keep the return exceed some specific mimimum threshold. This is suitable for the case that we don’t know what is a good policy and we want to do exploration. And another example is to set a threshold of the variance of return. Apart from the reward, we can also set constraints to the policy gradient, like TRPO/ PPO, we cannot update the policy to a directly too agressively. Exploration Process Beside setting criterion, we can also approach the problem from the aspective of exploration. 1. Provide external knowledge The criterions could give a the agent a learning signal of what are safe and what are not, where the agents still need to do explorations and learn how to behave. While the other type of method is to teach the agent directly what to do and what not to do, which can be more efficient and effective. But this method requires more human effort compare to setting the criterions only. In this method, we need someone to provide the initial knowledge, the one could be a human teacher, or an agent with previoud knowledge which is trasferable. The teacher will give exact instructions of what to do and the agent will not explore the unknow part of the environment. This method is suitable for the robotic taks, where robos are expensive and fragile and in the meanwhile, there’s no much requirement for innovative actions. 2. Risk directed exploration Agents are encouraged to seek controllable regions of the environment, and will be punished for exploration directions towards the dangerous places. End Words Safe reinforcement learning is an really interesting field of research, and it’s meaningful for the real-world problems. From robotics to operations, we do not only need a well-performed agent that could out-perform human, but also the agent that is able to handle extreme and dangerous cases so that we do not suffer from lose. Anyone with an interest of doing research or practical projects on Safe Reinforcement Learning is welcome to contact me and have discussions. —</summary></entry><entry><title type="html">Multi-agent Reinforcement Learning Literature Reviews</title><link href="http://0.0.0.0:4000/2019/05/14/marl.html" rel="alternate" type="text/html" title="Multi-agent Reinforcement Learning Literature Reviews" /><published>2019-05-14T00:00:00+00:00</published><updated>2019-05-14T00:00:00+00:00</updated><id>http://0.0.0.0:4000/2019/05/14/marl</id><content type="html" xml:base="http://0.0.0.0:4000/2019/05/14/marl.html">&lt;p&gt;&lt;em&gt;While deep reinforcement learning has been proved successful in many domains, solutions like deep Q-learning and Policy Gradient methods [Mnih et al., 2013, Lillicrap et al., 2015, Silver et al., 2014] can achieve impressive results in some challenging
+  single agent environment such as Atari games. However, the multi-agent environment makes the learning problem more challenging ,because agents policies are changing during the training and the environment is not stationary for a single agent
+  algorithm to learn a good strategy.
+  I am interested in this field of research so I would like to share a review of the literatures. I have categorized the literatures into three groups: opponent modeling methods, centralized critic methods and communication methods.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;opponent-modeling-methods&quot;&gt;Opponent Modeling Methods&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;Due to the changing policies of other agents, the environment is not stationary. To handle this problem, we can build a model of others’ policies, to predict the possile next actions of others, and take these actions into account when making decisions.
+In this way, the non-stationarity can be mitigated. And with deep learning, we can model others’ policies with neural networks, which are learnable. In this section, I will introduce some of the work using opponent modelling method to solve multi-agent problems.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;--learning-with-opponent-learning-awareness&quot;&gt;&lt;a href=&quot;https://arxiv.org/abs/1709.04326&quot;&gt;  Learning with Opponent-Learning Awareness&lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;LOLA’s value estimination is not only based on the agent’s current policy, but also the other’s policy after one anticipated update. LOLA agents do not predict the opponent’s policy update and learn a best respone, but attempt to influence the other’s policy update. They are shaping the update direction of each other. In experiments, the LOLA agents are able to reach a Nash-equilibrium tic-tac-toc.&lt;/p&gt;
+
+&lt;p&gt;The code is in &lt;a href=&quot;github.com/alshedivat/lola&quot;&gt;github repo&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;modeling-other-agents-by-oneself-&quot;&gt;&lt;a href=&quot;https://arxiv.org/pdf/1802.09640.pdf&quot;&gt;Modeling other agents by oneself &lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;In this method (SOM), each agent holds a belief of other agents, and they will use its own policy to predict the other’s action and to update the belief. The main intention of this work is to make the agents learn other’s goal so that they can they can understand each other in order to cooperate. They use recurrent neural network with state and a goal as input. The agent needs to infer others’ goal and maximize the likelihood of other’s actions.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;image image--lg&quot; src=&quot;/images/som.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Architecture of SOM &lt;a href=&quot;ttps://arxiv.org/pdf/1802.09640.pdf&quot;&gt; (image source) &lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;centralized-critic-methods&quot;&gt;Centralized Critic Methods&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;Besides building a model other others, another method is to use a centralized critic, which gives the value estimation based on the information from all the agents, so that the non-stationarity could be mitigated. I am not saying elimated because the
+critic only gives estimated value, so that it could not model the dynamics perfectly. The advantage of this method is that, we can apply the centralized critic directly in the actor-critic architecture without extra neural networks compared to opponent-modelling method, so it’s easier to train.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;multi-agent-actor-critic-for-mixed&quot;&gt;&lt;a href=&quot;https://arxiv.org/abs/1706.02275&quot;&gt;Multi-Agent Actor-Critic for Mixed&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Cooperative-Competitive Environments MADDPG has been qualified as the state-of-art multi-agent reinforcement learning architecture since it was published.
+The main idea in this work is to use a centralized critic to give the&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;action-value&lt;/em&gt; estimination with the actions of all agents, where the value estimination contrains the information of the global state. This solve the problem of partial observability and non-stationarity that brought by the changing policies of other agents in the environment.&lt;/p&gt;
+
+&lt;p&gt;The experiment environment is &lt;a href=&quot;https://github.com/openai/multiagent-particle-envs&quot;&gt; OpenAI’s multiagent-particle-envs &lt;/a&gt;, and code is in &lt;a href=&quot;https://github.com/openai/maddpg&quot;&gt;github &lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;image image--lg&quot; src=&quot;/images/maddpg.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Architecture of MADDPG &lt;a href=&quot;https://arxiv.org/abs/1706.02275&quot;&gt; (image source) &lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;-counterfactual-multi-agent-reinforcement-learning-&quot;&gt;&lt;a href=&quot;https://arxiv.org/abs/1705.08926&quot;&gt; Counterfactual Multi-agent reinforcement learning &lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;Similar to MADDPG, COMA uses a centralized critic to estiminate the A-function. What’s different is that COMA added a &lt;strong&gt;counterfactual baseline&lt;/strong&gt; to margin out a single agent’s action. So that the credit that the agent recieves can be considered as independent of other agents.
+They used StarCrat unit micromanagement as the experiment environment.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;image image--lg&quot; src=&quot;/images/coma.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Architecture of COMA &lt;a href=&quot;https://arxiv.org/abs/1705.08926&quot;&gt; (image source) &lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;communication-methods&quot;&gt;Communication Methods&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;In nature, if two creatures want to cooperate, they will share some information to coordinate. So in this set of method, instead of doing modeling or estimination of other’s actions or intents, the agent send messages directly to each other. The advantage of this method is that without estimation all the actions and intents are correct. But the disadvantage of this method is that in many cases it’s difficult or impossible to construct a message channel. And the cost of sending messages
+could be expensive.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;-learning-to-communicate-with-deep-multi-agent-reinforcement-learning&quot;&gt;&lt;a href=&quot;https://arxiv.org/pdf/1605.06676.pdf&quot;&gt; Learning to communicate with deep multi-agent reinforcement learning&lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;This work introduces an architecture where agents can communicate via a limited bandit channel. There are two method of communication, one is to decompose the action into environment action and communication action, to learn them separatedly with two neural networks; the other one is to share the gradients among agents via the communication channel.&lt;/p&gt;
+
+&lt;h4 id=&quot;learning-to-communicate-and-act-in-cooperative-multiagent-systems-using-hierarchical-reinforcement-learning&quot;&gt;&lt;a href=&quot;https://people.cs.umass.edu/~mahadeva/papers/aamas04.pdf&quot;&gt;Learning to Communicate and Act in Cooperative Multiagent Systems using Hierarchical Reinforcement Learning&lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;In this paper, the authors proposed a Hierarchical multi-agent learning method, where the agents learn to communicate or not. Compared to other communication method, the novelty of this method is that the they let the agent to find the balance of using communication or not. Because usually the communication could be expensive, if the agent can decide when to use communication only if necessary, the efficiency would be improved.
+&lt;!--more--&gt;&lt;/p&gt;</content><author><name>Hui Chen</name></author><category term="RL" /><category term="Multi-agent" /><summary type="html">While deep reinforcement learning has been proved successful in many domains, solutions like deep Q-learning and Policy Gradient methods [Mnih et al., 2013, Lillicrap et al., 2015, Silver et al., 2014] can achieve impressive results in some challenging single agent environment such as Atari games. However, the multi-agent environment makes the learning problem more challenging ,because agents policies are changing during the training and the environment is not stationary for a single agent algorithm to learn a good strategy. I am interested in this field of research so I would like to share a review of the literatures. I have categorized the literatures into three groups: opponent modeling methods, centralized critic methods and communication methods. Opponent Modeling Methods Due to the changing policies of other agents, the environment is not stationary. To handle this problem, we can build a model of others’ policies, to predict the possile next actions of others, and take these actions into account when making decisions. In this way, the non-stationarity can be mitigated. And with deep learning, we can model others’ policies with neural networks, which are learnable. In this section, I will introduce some of the work using opponent modelling method to solve multi-agent problems. Learning with Opponent-Learning Awareness LOLA’s value estimination is not only based on the agent’s current policy, but also the other’s policy after one anticipated update. LOLA agents do not predict the opponent’s policy update and learn a best respone, but attempt to influence the other’s policy update. They are shaping the update direction of each other. In experiments, the LOLA agents are able to reach a Nash-equilibrium tic-tac-toc. The code is in github repo Modeling other agents by oneself In this method (SOM), each agent holds a belief of other agents, and they will use its own policy to predict the other’s action and to update the belief. The main intention of this work is to make the agents learn other’s goal so that they can they can understand each other in order to cooperate. They use recurrent neural network with state and a goal as input. The agent needs to infer others’ goal and maximize the likelihood of other’s actions. Architecture of SOM (image source) Centralized Critic Methods Besides building a model other others, another method is to use a centralized critic, which gives the value estimation based on the information from all the agents, so that the non-stationarity could be mitigated. I am not saying elimated because the critic only gives estimated value, so that it could not model the dynamics perfectly. The advantage of this method is that, we can apply the centralized critic directly in the actor-critic architecture without extra neural networks compared to opponent-modelling method, so it’s easier to train. Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments MADDPG has been qualified as the state-of-art multi-agent reinforcement learning architecture since it was published. The main idea in this work is to use a centralized critic to give the action-value estimination with the actions of all agents, where the value estimination contrains the information of the global state. This solve the problem of partial observability and non-stationarity that brought by the changing policies of other agents in the environment. The experiment environment is OpenAI’s multiagent-particle-envs , and code is in github Architecture of MADDPG (image source) Counterfactual Multi-agent reinforcement learning Similar to MADDPG, COMA uses a centralized critic to estiminate the A-function. What’s different is that COMA added a counterfactual baseline to margin out a single agent’s action. So that the credit that the agent recieves can be considered as independent of other agents. They used StarCrat unit micromanagement as the experiment environment. Architecture of COMA (image source) Communication Methods In nature, if two creatures want to cooperate, they will share some information to coordinate. So in this set of method, instead of doing modeling or estimination of other’s actions or intents, the agent send messages directly to each other. The advantage of this method is that without estimation all the actions and intents are correct. But the disadvantage of this method is that in many cases it’s difficult or impossible to construct a message channel. And the cost of sending messages could be expensive. Learning to communicate with deep multi-agent reinforcement learning This work introduces an architecture where agents can communicate via a limited bandit channel. There are two method of communication, one is to decompose the action into environment action and communication action, to learn them separatedly with two neural networks; the other one is to share the gradients among agents via the communication channel. Learning to Communicate and Act in Cooperative Multiagent Systems using Hierarchical Reinforcement Learning In this paper, the authors proposed a Hierarchical multi-agent learning method, where the agents learn to communicate or not. Compared to other communication method, the novelty of this method is that the they let the agent to find the balance of using communication or not. Because usually the communication could be expensive, if the agent can decide when to use communication only if necessary, the efficiency would be improved.</summary></entry><entry><title type="html">NLP - Story Understanding With LSTM</title><link href="http://0.0.0.0:4000/2019/01/31/nlp.html" rel="alternate" type="text/html" title="NLP - Story Understanding With LSTM" /><published>2019-01-31T00:00:00+00:00</published><updated>2019-01-31T00:00:00+00:00</updated><id>http://0.0.0.0:4000/2019/01/31/nlp</id><content type="html" xml:base="http://0.0.0.0:4000/2019/01/31/nlp.html">&lt;p&gt;In the last project, I applied deep learning methods to solve a particular story understanding problem. Automatic understanding of stories is an important task in natural language understanding
+            &lt;a href=&quot;https://www.aclweb.org/anthology/D13-1020&quot;&gt;[1]&lt;/a&gt;. Specifically, I developed a model that given a sequence of sentences learns to sort these sentence in order to yield a coherent story &lt;a href=&quot;https://www.microsoft.com/en-us/research/wp-content/uploads/2016/06/short-commonsense-stories.pdf&quot;&gt;[2]&lt;/a&gt;.
+            This sounds (and to an extent is) trivial for humans, however it is quite a difficult task for machines as it involves commonsense knowledge and temporal understanding.&lt;/p&gt;
+
+&lt;p&gt;This is the course project of &lt;a href=&quot;https://nbviewer.jupyter.org/github/uclmr/stat-nlp-book/blob/python/overview.ipynb&quot;&gt; Statistical Natural Language Processing  &lt;/a&gt; that I did at UCL in 2017&lt;/p&gt;
+
+&lt;h3 id=&quot;goal&quot;&gt;Goal&lt;/h3&gt;
+
+&lt;p&gt;The dataset consists of 45502 instances, each consisting of 5 sentences. The system needs to ouput a sequence of numbers which represent the predicted order of these sentences. For example, given a story:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;He went to the store.&lt;/li&gt;
+  &lt;li&gt;He found a lamp he liked.&lt;/li&gt;
+  &lt;li&gt;He bought the lamp.&lt;/li&gt;
+  &lt;li&gt;Jan decided to get a new lamp.&lt;/li&gt;
+  &lt;li&gt;Jan’s lamp broke.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The system needs to provide an answer in the following form: 2 3 4 1 0 where the numbers correspond to the zero-based index of each sentence in the correctly ordered story. So “2” for “He went to the store.” means that this sentence should come 3rd in the correctly ordered target story. In this particular example, this order of indices corresponds to the following target story:&lt;/p&gt;
+
+&lt;ol type=&quot;1&quot;&gt;
+  &lt;li&gt;Jan's lamp broke.&lt;/li&gt;
+  &lt;li&gt;Jan decided to get a new lamp.&lt;/li&gt;
+  &lt;li&gt;He went to the store.&lt;/li&gt;
+  &lt;li&gt;He found a lamp he liked.&lt;/li&gt;
+  &lt;li&gt;He bought the lamp.
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;my-method&quot;&gt;My Method&lt;/h3&gt;
+
+&lt;h4 id=&quot;data-preprocessing&quot;&gt;Data Preprocessing&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Tokenization: Used TreebankWordTokenizer from &lt;a href=&quot;https://www.nltk.org/_modules/nltk/tokenize/treebank.html&quot;&gt;nltk&lt;/a&gt; The Treebank tokenizer uses regular expressions to tokenize text as in Penn Treebank&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Word to Vector: &lt;a href=&quot;https://nlp.stanford.edu/projects/glove/&quot;&gt;Glove&lt;/a&gt; vector representations for words.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;model&quot;&gt;Model&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  from tensorflow.contrib import rnn
+  learning_rate = 0.01
+  num_hidden = 128
+  num_features = 64
+  timesteps = max_sent_len
+  lstm_output_size = 64
+
+  class BasicRNN():
+      def __init__(self,num_hidden, num_features, timesteps ):
+          self.num_hidden = num_hidden 
+          self.num_features = num_features
+          self.timesteps = timesteps
+
+
+          self.weights = {
+              'out': tf.Variable(tf.random_normal([self.num_hidden, self.num_features]))
+          }
+          self.biases = {
+              'out': tf.Variable(tf.random_normal([self.num_features]))
+          }
+
+      def lstm_cell(self):
+            return rnn.BasicLSTMCell(self.num_hidden, forget_bias=1.0)
+
+      def buildRNN(self, x):
+          # Forward direction cell
+
+          rnn_cell = rnn.MultiRNNCell([self.lstm_cell() for _ in range(4)])
+          #x = tf.unstack(x, self.timesteps, 1) 
+          # x = timesteps x batch_size x input_size
+          outputs, states = rnn.static_rnn(rnn_cell, x, dtype=tf.float32)
+
+          return tf.matmul(outputs[-1], self.weights['out']) + self.biases['out']
+
+      def buildBidirectionalRNN (self, x):
+          # Forward direction cell
+          lstm_fw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0)
+          # Backward direction cell
+          lstm_bw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0)
+          # Get lstm cell output
+          try:
+              outputs, _, _ = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x,
+                        dtype=tf.float32)
+          except Exception: # Old TensorFlow version only returns outputs not states
+              outputs = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x,
+                  dtype=tf.float32)
+          outs = []
+          for output in outputs:
+              outs.append( tf.matmul(output, self.bi_weights['out']) + self.biases['out'])
+          return outs
+          
+      def buildDynaimcRNN(self, x, batch_size):
+          
+          lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
+          outputs, states = tf.contrib.rnn.static_rnn(lstm_cell, x, dtype=tf.float32,
+      sequence_length=self.seqlen)
+  #         outputs = tf.stack(outputs)
+  #         outputs = tf.transpose(outputs, [1, 0, 2])
+  #         # Hack to build the indexing and retrieve the right output.
+  #         batch_size = tf.shape(outputs)[0]
+  #         # Start indices for each sample
+  #         index = tf.range(0, batch_size) * self.timesteps + (self.seqlen - 1)
+  #         # Indexing
+  #         outputs = tf.gather(tf.reshape(outputs, [-1, self.num_hidden]), index)
+          outputs = tf.reshape(tf.stack(outputs), [-1, lstm_cell.output_size])
+  #         num_partitions = 2
+  #         res_out = tf.dynamic_partition(outputs, self.partitions, num_partitions)
+          # Linear activation, using outputs computed above
+          return tf.matmul(outputs, self.weights['out']) + self.biases['out']
+                  
+          beta = 0.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;training&quot;&gt;Training&lt;/h4&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+
+  tf.reset_default_graph()
+  tf.initialize_all_variables()
+
+
+  ## PLACEHOLDERS
+  story = tf.placeholder(tf.int64, [None, None, None], &quot;story&quot;)        # [batch_size x 5 x max_length]
+  order = tf.placeholder(tf.int64, [None, None], &quot;order&quot;)              # [batch_size x 5]
+
+  batch_size = tf.shape(story)[0]
+
+  sentences = [tf.reshape(x, [batch_size, -1]) for x in tf.split(axis=1, num_or_size_splits=5, value=story)]  # 5 times [batch_size x max_length]
+
+  # Word embeddings
+  initializer = tf.constant_initializer(word_vector_matrix)
+  embeddings = tf.get_variable(&quot;W&quot;, [vocab_size, input_size], initializer=initializer)
+
+  sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence)   # 5 * [batch_size x max_seq_length x input_size]
+                        for sentence in sentences]
+
+  basicRNN = BasicRNN(num_hidden, num_features, timesteps )
+
+  # x [batch_size*5, input_size]
+
+  to_single_sentence = tf.concat(sentences_embedded , axis = 0)
+
+  x =  tf.unstack(to_single_sentence, timesteps, 1)
+
+
+  # lstmOutput  [batch_size*5, output_size]
+  lstmOutput = basicRNN.buildRNN( x )
+
+  # separate lstmOutput 5x[batch_size, output_size]
+  hs = tf.reshape(lstmOutput,[5, -1, lstm_output_size] )
+  hs_transpose = tf.transpose(hs, [1,0,2])
+
+  hs_reshape = tf.reshape(hs_transpose, [-1, 5*lstm_output_size]) #[batch_size, 5*output]
+
+  logits_flat = tf.contrib.layers.linear(hs_reshape, 5 * target_size)    # [batch_size x 5*target_size]
+  logits = tf.reshape(logits_flat, [-1, 5, target_size])        # [batch_size x 5 x target_size]
+
+  # loss + regularization
+  regularizer = tf.nn.l2_loss(embeddings)
+  loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order))
+  loss = tf.reduce_mean(loss + beta * regularizer)
+
+  # prediction function
+  unpacked_logits = [tensor for tensor in tf.unstack(logits, axis=1)]
+  softmaxes = [tf.nn.softmax(tensor) for tensor in unpacked_logits]
+  softmaxed_logits = tf.stack(softmaxes, axis=1)
+  predict = tf.arg_max(softmaxed_logits, 2)
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;results&quot;&gt;Results&lt;/h3&gt;
+
+&lt;table&gt;
+                &lt;tr&gt;
+                    &lt;th&gt; Model &lt;/th&gt;
+                    &lt;th&gt; Hyper-parameters &amp;gt;&lt;/th&gt;
+
+                    &lt;th&gt; Highest Score &lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; Static RNN + LSTM(4) &lt;/td&gt;
+                    &lt;td&gt; batch size: 256; learning rate: 0.1; &lt;/td&gt;
+                    &lt;td&gt; 56.0 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; Bi-directional RNN + LSTM(2) &lt;/td&gt;
+                    &lt;td&gt; batch size: 256; learning rate: 0.01; &lt;/td&gt;
+                    &lt;td&gt; 54. &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; Dynamic RNN + LSTM(2) &lt;/td&gt;
+                    &lt;td&gt; batch size: 256; learning rate: 0.01; &lt;/td&gt;
+                    &lt;td&gt; 54.6 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; Sent2Vec RNN &lt;/td&gt;
+                    &lt;td&gt; batch size: 256; learning rate: 0.01; &lt;/td&gt;
+                    &lt;td&gt; 53.5 &lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/table&gt;
+
+&lt;h4 id=&quot;benchmarks&quot;&gt;Benchmarks&lt;/h4&gt;
+&lt;table&gt;
+                &lt;tr&gt;
+                    &lt;th&gt; Model &lt;/th&gt;
+
+                    &lt;th&gt; Highest Score &lt;/th&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; DSSM&lt;/td&gt;
+                    &lt;td&gt; 58.5 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; GenSim&lt;/td&gt;
+                    &lt;td&gt; 53.9 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; Skip-thoughts&lt;/td&gt;
+                    &lt;td&gt; 55.2 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; SentimentLast&lt;/td&gt;
+                    &lt;td&gt; 55.2 &lt;/td&gt;
+                &lt;/tr&gt;
+
+                &lt;tr&gt;
+                    &lt;td&gt; Frequency &lt;/td&gt;
+                    &lt;td&gt; 52.0 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; N-gram-overlap&lt;/td&gt;
+                    &lt;td&gt; 49.4 &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt; Narritive-chains-stories &lt;/td&gt;
+                    &lt;td&gt; 49.4 &lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/table&gt;</content><author><name>Hui Chen</name></author><category term="NLP" /><summary type="html">In the last project, I applied deep learning methods to solve a particular story understanding problem. Automatic understanding of stories is an important task in natural language understanding [1]. Specifically, I developed a model that given a sequence of sentences learns to sort these sentence in order to yield a coherent story [2]. This sounds (and to an extent is) trivial for humans, however it is quite a difficult task for machines as it involves commonsense knowledge and temporal understanding. This is the course project of Statistical Natural Language Processing that I did at UCL in 2017 Goal The dataset consists of 45502 instances, each consisting of 5 sentences. The system needs to ouput a sequence of numbers which represent the predicted order of these sentences. For example, given a story: He went to the store. He found a lamp he liked. He bought the lamp. Jan decided to get a new lamp. Jan’s lamp broke. The system needs to provide an answer in the following form: 2 3 4 1 0 where the numbers correspond to the zero-based index of each sentence in the correctly ordered story. So “2” for “He went to the store.” means that this sentence should come 3rd in the correctly ordered target story. In this particular example, this order of indices corresponds to the following target story: Jan's lamp broke. Jan decided to get a new lamp. He went to the store. He found a lamp he liked. He bought the lamp. My Method Data Preprocessing Tokenization: Used TreebankWordTokenizer from nltk The Treebank tokenizer uses regular expressions to tokenize text as in Penn Treebank Word to Vector: Glove vector representations for words. Model from tensorflow.contrib import rnn learning_rate = 0.01 num_hidden = 128 num_features = 64 timesteps = max_sent_len lstm_output_size = 64 class BasicRNN(): def __init__(self,num_hidden, num_features, timesteps ): self.num_hidden = num_hidden self.num_features = num_features self.timesteps = timesteps self.weights = { 'out': tf.Variable(tf.random_normal([self.num_hidden, self.num_features])) } self.biases = { 'out': tf.Variable(tf.random_normal([self.num_features])) } def lstm_cell(self): return rnn.BasicLSTMCell(self.num_hidden, forget_bias=1.0) def buildRNN(self, x): # Forward direction cell rnn_cell = rnn.MultiRNNCell([self.lstm_cell() for _ in range(4)]) #x = tf.unstack(x, self.timesteps, 1) # x = timesteps x batch_size x input_size outputs, states = rnn.static_rnn(rnn_cell, x, dtype=tf.float32) return tf.matmul(outputs[-1], self.weights['out']) + self.biases['out'] def buildBidirectionalRNN (self, x): # Forward direction cell lstm_fw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0) # Backward direction cell lstm_bw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0) # Get lstm cell output try: outputs, _, _ = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32) except Exception: # Old TensorFlow version only returns outputs not states outputs = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, x, dtype=tf.float32) outs = [] for output in outputs: outs.append( tf.matmul(output, self.bi_weights['out']) + self.biases['out']) return outs def buildDynaimcRNN(self, x, batch_size): lstm_cell = tf.contrib.rnn.BasicLSTMCell(self.num_hidden) outputs, states = tf.contrib.rnn.static_rnn(lstm_cell, x, dtype=tf.float32, sequence_length=self.seqlen) # outputs = tf.stack(outputs) # outputs = tf.transpose(outputs, [1, 0, 2]) # # Hack to build the indexing and retrieve the right output. # batch_size = tf.shape(outputs)[0] # # Start indices for each sample # index = tf.range(0, batch_size) * self.timesteps + (self.seqlen - 1) # # Indexing # outputs = tf.gather(tf.reshape(outputs, [-1, self.num_hidden]), index) outputs = tf.reshape(tf.stack(outputs), [-1, lstm_cell.output_size]) # num_partitions = 2 # res_out = tf.dynamic_partition(outputs, self.partitions, num_partitions) # Linear activation, using outputs computed above return tf.matmul(outputs, self.weights['out']) + self.biases['out'] beta = 0.1 Training tf.reset_default_graph() tf.initialize_all_variables() ## PLACEHOLDERS story = tf.placeholder(tf.int64, [None, None, None], &quot;story&quot;) # [batch_size x 5 x max_length] order = tf.placeholder(tf.int64, [None, None], &quot;order&quot;) # [batch_size x 5] batch_size = tf.shape(story)[0] sentences = [tf.reshape(x, [batch_size, -1]) for x in tf.split(axis=1, num_or_size_splits=5, value=story)] # 5 times [batch_size x max_length] # Word embeddings initializer = tf.constant_initializer(word_vector_matrix) embeddings = tf.get_variable(&quot;W&quot;, [vocab_size, input_size], initializer=initializer) sentences_embedded = [tf.nn.embedding_lookup(embeddings, sentence) # 5 * [batch_size x max_seq_length x input_size] for sentence in sentences] basicRNN = BasicRNN(num_hidden, num_features, timesteps ) # x [batch_size*5, input_size] to_single_sentence = tf.concat(sentences_embedded , axis = 0) x = tf.unstack(to_single_sentence, timesteps, 1) # lstmOutput [batch_size*5, output_size] lstmOutput = basicRNN.buildRNN( x ) # separate lstmOutput 5x[batch_size, output_size] hs = tf.reshape(lstmOutput,[5, -1, lstm_output_size] ) hs_transpose = tf.transpose(hs, [1,0,2]) hs_reshape = tf.reshape(hs_transpose, [-1, 5*lstm_output_size]) #[batch_size, 5*output] logits_flat = tf.contrib.layers.linear(hs_reshape, 5 * target_size) # [batch_size x 5*target_size] logits = tf.reshape(logits_flat, [-1, 5, target_size]) # [batch_size x 5 x target_size] # loss + regularization regularizer = tf.nn.l2_loss(embeddings) loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=order)) loss = tf.reduce_mean(loss + beta * regularizer) # prediction function unpacked_logits = [tensor for tensor in tf.unstack(logits, axis=1)] softmaxes = [tf.nn.softmax(tensor) for tensor in unpacked_logits] softmaxed_logits = tf.stack(softmaxes, axis=1) predict = tf.arg_max(softmaxed_logits, 2) Results Model Hyper-parameters &amp;gt; Highest Score Static RNN + LSTM(4) batch size: 256; learning rate: 0.1; 56.0 Bi-directional RNN + LSTM(2) batch size: 256; learning rate: 0.01; 54. Dynamic RNN + LSTM(2) batch size: 256; learning rate: 0.01; 54.6 Sent2Vec RNN batch size: 256; learning rate: 0.01; 53.5 Benchmarks Model Highest Score DSSM 58.5 GenSim 53.9 Skip-thoughts 55.2 SentimentLast 55.2 Frequency 52.0 N-gram-overlap 49.4 Narritive-chains-stories 49.4</summary></entry></feed>

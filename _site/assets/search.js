@@ -1,0 +1,1 @@
+window.TEXT_SEARCH_DATA={'posts':[{'title':"NLP - Story Understanding With LSTM",'url':"/2019/01/31/nlp.html"},{'title':"Multi-agent Reinforcement Learning Literature Reviews",'url':"/2019/05/14/marl.html"},{'title':"Safe Reinforcement Learning Literature Reviews",'url':"/2019/07/01/safe_rl.html"}]};
