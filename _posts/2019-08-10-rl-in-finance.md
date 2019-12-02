@@ -5,7 +5,7 @@ tags: RL
 mathjax: true
 ---
 
-Finance is one of the most difficult application field of applying reinforcement learning, because we cannot model the financial market perfectly as a fully observable environment. And in trading, where the risk control is important but becomes more difficult because of the parial-observable environment. NYU's cource Reinfcement Learning in Traing <a href="https://www.hanjuwang.net/hanju/2019/2135.html#"> link </a> introduces a risk management reward shaping method that make it possible to use the standard risk neutral formulation of Q-learning. 
+Finance is one of the most difficult application field of applying reinforcement learning, because we cannot model the financial market perfectly as a fully observable environment. And in trading, where the risk control is important but becomes more difficult because of the parial-observable environment. NYU's cource Reinfcement Learning in Traing <a href="https://www.coursera.org/specializations/machine-learning-reinforcement-finance#"> link </a> introduces a risk management reward shaping method that make it possible to use the standard risk neutral formulation of Q-learning. 
 
 
 
