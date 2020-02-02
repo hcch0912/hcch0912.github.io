@@ -18,7 +18,7 @@ titles:
 key: page-about
 ---
 
-<img class="image image--lg"  src="assets/images/huichen.jpg"/>
+<img class="image image--xl"  src="assets/images/team.jpg"/>
 
 Hui is an AI Research Engineer at <a href="https://www.instadeep.com">InstaDeep</a> . Priviously she gained her Master of Research degree with Distinction from UCL, where she conducted research on multi-agent reinforcement learning with Prof.Jun
                 Wang. Before that, she completed the Bachlor degree program in Software Engineer at Wuhan University, ranking top 10%. Hui has the passion for reinforcement learning and multi-agent learning and she is applying her engineering skills to

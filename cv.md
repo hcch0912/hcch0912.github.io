@@ -46,9 +46,11 @@ Studied Graphical Models, Statistical Natural Language Processing, Advanced Deep
 
 *2018.9 - present London, UK*
 
-- Conduct Research on reinforcement learning method in combinatoril optimization problems
-- Design and implement reinforcement learning environemnt with Golang for the product.
-- Implement RL algorithms and integrate with platform, including (PPO, A2C, etc)
+- Conduct Research on reinforcement learning method in solving hardware design problem.
+- Design and implemented reinforcement learning environment for PCB routing problem, translated hardware domain knowledge to DRL representations.
+-  Implemented deep reinforcement learning algorithms and built training and serving pipelines for the product <a href="https://deeppcb.ai/"> DeepPCB </a>
+- Lead project <a href="https://www.aicrowd.com/challenges/flatland-challenge">Flatland</a>, conducted research on multiagent reinforcement learning, implemented novel algorithms and got 8th in Round1
+  
 
 ### Internship
 
